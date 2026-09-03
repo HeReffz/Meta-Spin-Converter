@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ray-Ban Meta Spin View Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0d0f;
+            --surface: #141619;
+            --surface-hover: #1a1d21;
+            --border: #22262c;
+            --border-light: #2c323a;
+            --text-primary: #f0f2f5;
+            --text-secondary: #8c95a3;
+            --text-tertiary: #586170;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #10b981;
+            --radius-main: 16px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 24px 16px 48px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Top Bar */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 2px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+
+        .nav-guide-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 999px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .nav-guide-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-light);
+            background: var(--surface-hover);
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .app-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        /* Converter Card */
+        .converter-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-main);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Drop Area */
+        .upload-area {
+            border: 1.5px dashed var(--border-light);
+            border-radius: 12px;
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.01);
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-icon {
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .upload-text {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .upload-hint {
+            font-size: 11.5px;
+            color: var(--text-tertiary);
+        }
+
+        /* File Selected Preview Row */
+        .selected-file-row {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+
+        .file-thumb {
+            width: 44px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #000;
+            border: 1px solid var(--border);
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .file-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            padding: 6px;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Options */
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Clean Duration Selector */
+        .duration-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .duration-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 9px 0;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .duration-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+
+        .duration-btn.active {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: #3b82f6;
+        }
+
+        /* Action Button */
+        .btn-action {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.15s ease;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        .btn-action:disabled {
+            background: var(--border);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        /* Loading / Processing Bar */
+        .processing-bar {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .processing-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .progress-track {
+            height: 4px;
+            background: var(--surface);
+            border-radius: 99px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-indicator {
+            height: 100%;
+            width: 40%;
+            background: #3b82f6;
+            border-radius: 99px;
+            position: absolute;
+            animation: slide 1.2s infinite ease-in-out;
+        }
+
+        @keyframes slide {
+            0% { left: -40%; width: 30%; }
+            50% { width: 50%; }
+            100% { left: 100%; width: 30%; }
+        }
+
+        /* Result Container */
+        .result-box {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .video-player {
+            width: 100%;
+            max-height: 220px;
+            border-radius: 8px;
+            background: #000;
+            display: block;
+            border: 1px solid var(--border);
+        }
+
+        .download-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-download-mov {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #10b981;
+            color: #042f2e;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s ease;
+        }
+
+        .btn-download-mov:hover {
+            background: #059669;
+        }
+
+        .btn-download-jpg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-download-jpg:hover {
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+
+        /* Guide */
+        .guide-box {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-main);
+            background: var(--surface);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .guide-title {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guide-steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-top: 4px;
+        }
+
+        .guide-steps li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            display: flex;
+            gap: 8px;
+        }
+
+        .guide-steps span {
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Nav -->
+        <nav class="top-nav">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="6" cy="12" r="4"></circle>
+                        <circle cx="18" cy="12" r="4"></circle>
+                        <line x1="10" y1="12" x2="14" y2="12"></line>
+                    </svg>
+                </div>
+                <span>MetaSpin</span>
+            </div>
+            <button type="button" class="nav-guide-btn" id="navGuideBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>Cara Pakai</span>
+            </button>
+        </nav>
+
+        <!-- Header -->
+        <header>
+            <h1 class="app-title">Ray-Ban Meta Converter</h1>
+            <p class="app-subtitle">Ubah foto atau video biasa ke format metadata kacamata Ray-Ban Meta agar fitur Spin View aktif di Instagram Story.</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="converter-card">
+            <!-- Upload Drop Area -->
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept="image/*,video/*">
+                <div class="upload-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="upload-text">Pilih Foto atau Video</div>
+                <div class="upload-hint">Format JPG, PNG, atau MOV</div>
+            </div>
+
+            <!-- Selected File Row -->
+            <div class="selected-file-row" id="selectedFileRow">
+                <img id="fileThumb" class="file-thumb" alt="Preview">
+                <div class="file-info">
+                    <div class="file-name" id="fileName">foto.jpg</div>
+                    <div class="file-size" id="fileMeta">0 KB</div>
+                </div>
+                <button type="button" class="btn-cancel" id="btnCancel" title="Hapus file">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Duration Selector -->
+            <div class="option-group">
+                <label class="option-label">Durasi Video Story</label>
+                <div class="duration-selector">
+                    <button type="button" class="duration-btn" data-duration="5">5 Detik</button>
+                    <button type="button" class="duration-btn active" data-duration="10">10 Detik</button>
+                    <button type="button" class="duration-btn" data-duration="15">15 Detik</button>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button type="button" class="btn-action" id="btnConvert" disabled>
+                <span id="btnConvertText">Mulai Konversi</span>
+            </button>
+
+            <!-- Processing Bar -->
+            <div class="processing-bar" id="processingBar">
+                <div class="processing-text">
+                    <span>Sedang memproses...</span>
+                    <span id="processStep">Encoding H.265</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-indicator"></div>
+                </div>
+            </div>
+
+            <!-- Result Box -->
+            <div class="result-box" id="resultBox">
+                <div class="result-header">
+                    <span>✓ Selesai Dikonversi</span>
+                    <span style="color: var(--text-tertiary); font-family: monospace;" id="resultSize">0 KB</span>
+                </div>
+
+                <video class="video-player" id="resultVideo" controls playsinline></video>
+
+                <div class="download-actions">
+                    <a href="#" class="btn-download-mov" id="btnDownloadMov" download>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Download Spin View (.MOV)</span>
+                    </a>
+
+                    <a href="#" class="btn-download-jpg" id="btnDownloadJpg" download>
+                        <span>Download Foto EXIF (.JPG)</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Practical Guide -->
+        <aside class="guide-box" id="guideBox">
+            <div class="guide-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Cara Simpan di iPhone (Safari)</span>
+            </div>
+            <ul class="guide-steps">
+                <li><span>01.</span> Tekan tombol Download Spin View (.MOV) di atas.</li>
+                <li><span>02.</span> Tekan ikon Share di Safari, lalu pilih <strong>Save Video</strong> agar masuk ke aplikasi Photos/Galeri.</li>
+                <li><span>03.</span> Buka Instagram Story, pilih videonya, lalu aktifkan ikon kacamata (Spin View).</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFileRow = document.getElementById('selectedFileRow');
+        const fileThumb = document.getElementById('fileThumb');
+        const fileName = document.getElementById('fileName');
+        const fileMeta = document.getElementById('fileMeta');
+        const btnCancel = document.getElementById('btnCancel');
+        const btnConvert = document.getElementById('btnConvert');
+        const btnConvertText = document.getElementById('btnConvertText');
+        const processingBar = document.getElementById('processingBar');
+        const processStep = document.getElementById('processStep');
+        const resultBox = document.getElementById('resultBox');
+        const resultVideo = document.getElementById('resultVideo');
+        const resultSize = document.getElementById('resultSize');
+        const btnDownloadMov = document.getElementById('btnDownloadMov');
+        const btnDownloadJpg = document.getElementById('btnDownloadJpg');
+
+        let selectedFile = null;
+        let selectedDuration = 10;
+
+        // Smooth scroll to guide
+        document.getElementById('navGuideBtn').addEventListener('click', () => {
+            document.getElementById('guideBox').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Duration selector
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedDuration = parseInt(btn.dataset.duration);
+            });
+        });
+
+        // Dropzone
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function handleFile(file) {
+            selectedFile = file;
+            resultBox.style.display = 'none';
+
+            fileName.textContent = file.name;
+            fileMeta.textContent = formatBytes(file.size);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                fileThumb.src = e.target.result;
+                uploadArea.style.display = 'none';
+                selectedFileRow.style.display = 'flex';
+                btnConvert.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        btnCancel.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            selectedFileRow.style.display = 'none';
+            uploadArea.style.display = 'flex';
+            btnConvert.disabled = true;
+            resultBox.style.display = 'none';
+        });
+
+        btnConvert.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            btnConvert.disabled = true;
+            btnConvertText.textContent = 'Memproses...';
+            processingBar.style.display = 'flex';
+            resultBox.style.display = 'none';
+
+            const steps = ['Menyesuaikan rasio...', 'Encoding H.265...', 'Menyusun metadata Meta...'];
+            let stepIdx = 0;
+            const stepTimer = setInterval(() => {
+                stepIdx = (stepIdx + 1) % steps.length;
+                processStep.textContent = steps[stepIdx];
+            }, 1400);
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('duration', selectedDuration);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(stepTimer);
+                const data = await response.json();
+
+                if (data.success) {
+                    btnDownloadMov.href = data.mov_url;
+                    btnDownloadMov.setAttribute('download', data.mov_filename);
+
+                    resultVideo.src = data.mov_url;
+                    resultVideo.load();
+
+                    if (data.jpg_url) {
+                        btnDownloadJpg.style.display = 'flex';
+                        btnDownloadJpg.href = data.jpg_url;
+                        btnDownloadJpg.setAttribute('download', data.jpg_filename);
+                    } else {
+                        btnDownloadJpg.style.display = 'none';
+                    }
+
+                    processingBar.style.display = 'none';
+                    resultBox.style.display = 'flex';
+                    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    alert('Gagal: ' + (data.error || 'Terjadi kesalahan'));
+                    processingBar.style.display = 'none';
+                }
+            } catch (err) {
+                clearInterval(stepTimer);
+                alert('Koneksi terputus: ' + err.message);
+                processingBar.style.display = 'none';
+            } finally {
+                btnConvert.disabled = false;
+                btnConvertText.textContent = 'Mulai Konversi';
+            }
+        });
+    </script>
+</body>
+</html>
