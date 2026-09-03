@@ -10,10 +10,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Precise CSS to match the original clean utility interface
+# Custom CSS matching Gambar 1
 st.markdown("""
 <style>
-    /* Hide Streamlit chrome */
+    /* Hide Streamlit default branding */
     header[data-testid="stHeader"] {
         display: none !important;
     }
@@ -29,16 +29,17 @@ st.markdown("""
 
     /* Base Layout */
     .stApp {
-        background-color: #0c0d0f;
-        color: #f0f2f5;
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #0c0d0f !important;
+        color: #f0f2f5 !important;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     .main .block-container {
-        max-width: 440px !important;
+        max-width: 430px !important;
         padding-top: 1.5rem !important;
         padding-bottom: 3rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
+        margin: 0 auto !important;
     }
 
     /* Top Nav */
@@ -46,7 +47,7 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
     .brand {
         display: flex;
@@ -65,9 +66,10 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #f0f2f5;
     }
-    .nav-guide-link {
-        display: inline-flex;
+    .nav-guide-btn {
+        display: flex;
         align-items: center;
         gap: 6px;
         font-size: 12px;
@@ -75,18 +77,18 @@ st.markdown("""
         color: #8c95a3;
         background: #141619;
         border: 1px solid #22262c;
-        padding: 5px 12px;
+        padding: 5px 11px;
         border-radius: 999px;
         text-decoration: none;
         transition: all 0.15s ease;
     }
-    .nav-guide-link:hover {
+    .nav-guide-btn:hover {
         color: #f0f2f5;
         border-color: #2c323a;
         background: #1a1d21;
     }
 
-    /* Header */
+    /* Hero */
     .app-title {
         font-size: 20px;
         font-weight: 700;
@@ -101,73 +103,84 @@ st.markdown("""
         margin-bottom: 18px;
     }
 
-    /* Main Container Card Simulation */
-    div[data-testid="stVerticalBlock"] > div.element-container:has(div[data-testid="stFileUploader"]) {
-        margin-bottom: 0px;
+    /* Main Card Container */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background: #141619 !important;
+        border: 1px solid #22262c !important;
+        border-radius: 16px !important;
+        padding: 18px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        margin-bottom: 18px !important;
     }
 
     /* File Uploader styling */
     div[data-testid="stFileUploader"] {
-        background: #141619;
-        border: 1.5px dashed #2c323a;
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 14px;
+        background: rgba(255, 255, 255, 0.01) !important;
+        border: 1.5px dashed #2c323a !important;
+        border-radius: 12px !important;
+        padding: 14px !important;
+        margin-bottom: 12px !important;
+        transition: border-color 0.15s ease !important;
     }
     div[data-testid="stFileUploader"]:hover {
-        border-color: #8c95a3;
+        border-color: #8c95a3 !important;
     }
     div[data-testid="stFileUploader"] section {
-        padding: 0;
+        padding: 0 !important;
     }
-    div[data-testid="stFileUploader"] label {
+    div[data-testid="stFileUploader"] label p {
         font-size: 12px !important;
         font-weight: 600 !important;
         color: #8c95a3 !important;
-        margin-bottom: 6px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.02em !important;
     }
 
-    /* Radio Pills as Segmented Duration Buttons */
-    div[data-testid="stRadio"] label[data-baseweb="radio"] {
-        margin-right: 0 !important;
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] {
+    /* Segmented Control / Duration Pills */
+    div[data-testid="stSegmentedControl"] {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 6px !important;
         background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin-bottom: 14px !important;
+    }
+    div[data-testid="stSegmentedControl"] button {
+        background: #0c0d0f !important;
+        border: 1px solid #22262c !important;
+        color: #8c95a3 !important;
+        font-weight: 600 !important;
+        font-size: 12.5px !important;
+        border-radius: 8px !important;
+        padding: 9px 0 !important;
+        transition: all 0.15s ease !important;
+    }
+    div[data-testid="stSegmentedControl"] button:hover {
+        color: #f0f2f5 !important;
+        border-color: #2c323a !important;
+    }
+    div[data-testid="stSegmentedControl"] button[aria-checked="true"] {
+        background: #1a1d21 !important;
+        color: #f0f2f5 !important;
+        border-color: #3b82f6 !important;
+    }
+
+    /* Fallback Radio Pills if segmented_control is rendered as radio */
+    div[data-testid="stRadio"] div[role="radiogroup"] {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
     }
     div[data-testid="stRadio"] div[role="radiogroup"] label {
         background: #0c0d0f !important;
         border: 1px solid #22262c !important;
         border-radius: 8px !important;
-        padding: 8px 4px !important;
+        padding: 9px 4px !important;
         text-align: center !important;
         justify-content: center !important;
-        cursor: pointer !important;
-        transition: all 0.15s ease !important;
     }
-    div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
-        border-color: #2c323a !important;
-    }
-    /* Hide the radio circle */
-    div[data-testid="stRadio"] div[role="radiogroup"] label div:first-child {
-        display: none !important;
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] p {
-        font-size: 12.5px !important;
-        font-weight: 600 !important;
-        color: #8c95a3 !important;
-        margin: 0 !important;
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
-        background: #1a1d21 !important;
-        border-color: #3b82f6 !important;
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
-        color: #f0f2f5 !important;
-    }
-    div[data-testid="stRadio"] label {
+    div[data-testid="stRadio"] label p {
         font-size: 12px !important;
         font-weight: 600 !important;
         color: #8c95a3 !important;
@@ -179,12 +192,12 @@ st.markdown("""
         color: #ffffff !important;
         border: none !important;
         border-radius: 10px !important;
-        font-weight: 600 !important;
         font-size: 14px !important;
-        padding: 12px !important;
+        font-weight: 600 !important;
+        padding: 13px !important;
         box-shadow: none !important;
         transition: background-color 0.15s ease !important;
-        margin-top: 8px !important;
+        margin-top: 4px !important;
     }
     button[kind="primary"]:hover {
         background-color: #1d4ed8 !important;
@@ -198,8 +211,7 @@ st.markdown("""
         border-radius: 8px !important;
         font-weight: 600 !important;
         font-size: 13.5px !important;
-        padding: 11px !important;
-        margin-top: 6px !important;
+        padding: 12px !important;
     }
     div[data-testid="stDownloadButton"]:first-of-type button:hover {
         background-color: #059669 !important;
@@ -210,9 +222,8 @@ st.markdown("""
         border: 1px solid #22262c !important;
         border-radius: 8px !important;
         font-weight: 500 !important;
-        font-size: 12.5px !important;
+        font-size: 12px !important;
         padding: 10px !important;
-        margin-top: 4px !important;
     }
     div[data-testid="stDownloadButton"]:last-of-type:not(:first-of-type) button:hover {
         color: #f0f2f5 !important;
@@ -224,16 +235,16 @@ st.markdown("""
         border-radius: 8px !important;
         border: 1px solid #22262c !important;
         background: #000 !important;
-        margin-top: 10px !important;
+        margin: 10px 0 !important;
     }
 
     /* Guide Box */
     .guide-box {
         border: 1px solid #22262c;
-        border-radius: 14px;
+        border-radius: 16px;
         background: #141619;
         padding: 14px 16px;
-        margin-top: 24px;
+        margin-top: 12px;
     }
     .guide-title {
         font-size: 12.5px;
@@ -270,7 +281,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Top Bar with MetaSpin Branding and Cara Pakai link
+# Top Bar with MetaSpin Branding & Cara Pakai Button
 st.markdown("""
 <nav class="top-nav">
     <div class="brand">
@@ -283,7 +294,7 @@ st.markdown("""
         </div>
         <span>MetaSpin</span>
     </div>
-    <a href="#panduan-simpan" class="nav-guide-link">
+    <a href="#panduan" class="nav-guide-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -297,28 +308,54 @@ st.markdown("""
 <p class="app-subtitle">Ubah foto atau video biasa ke format metadata kacamata Ray-Ban Meta agar fitur Spin View aktif di Instagram Story.</p>
 """, unsafe_allow_html=True)
 
-# File Uploader
-uploaded_file = st.file_uploader(
-    "PILIH FOTO ATAU VIDEO",
-    type=["jpg", "jpeg", "png", "webp", "mov", "mp4"],
-    label_visibility="visible"
-)
+# Main Card Container (Just like Gambar 1)
+with st.container(border=True):
+    # File Uploader
+    uploaded_file = st.file_uploader(
+        "PILIH FOTO ATAU VIDEO",
+        type=["jpg", "jpeg", "png", "webp", "mov", "mp4"],
+        label_visibility="visible",
+        help="Format JPG, PNG, atau MOV"
+    )
 
-# Duration as Segmented Pills
-duration_label = st.radio(
-    "DURASI VIDEO STORY",
-    options=["5 Detik", "10 Detik", "15 Detik"],
-    index=1,
-    horizontal=True
-)
-duration_map = {"5 Detik": 5, "10 Detik": 10, "15 Detik": 15}
-duration = duration_map[duration_label]
+    # Duration Segmented Control (Pills with text)
+    if hasattr(st, "segmented_control"):
+        duration_label = st.segmented_control(
+            "DURASI VIDEO STORY",
+            options=["5 Detik", "10 Detik", "15 Detik"],
+            default="10 Detik",
+            label_visibility="visible"
+        )
+    elif hasattr(st, "pills"):
+        duration_label = st.pills(
+            "DURASI VIDEO STORY",
+            options=["5 Detik", "10 Detik", "15 Detik"],
+            default="10 Detik",
+            label_visibility="visible"
+        )
+    else:
+        duration_label = st.radio(
+            "DURASI VIDEO STORY",
+            options=["5 Detik", "10 Detik", "15 Detik"],
+            index=1,
+            horizontal=True
+        )
 
-if uploaded_file is not None:
-    file_ext = os.path.splitext(uploaded_file.name)[1].lower()
-    is_video = file_ext in [".mov", ".mp4", ".m4v"]
+    duration_map = {"5 Detik": 5, "10 Detik": 10, "15 Detik": 15}
+    duration = duration_map.get(duration_label, 10)
 
-    if st.button("Mulai Konversi", type="primary", use_container_width=True):
+    # Action Button
+    convert_clicked = st.button(
+        "Mulai Konversi",
+        type="primary",
+        use_container_width=True,
+        disabled=(uploaded_file is None)
+    )
+
+    if convert_clicked and uploaded_file is not None:
+        file_ext = os.path.splitext(uploaded_file.name)[1].lower()
+        is_video = file_ext in [".mov", ".mp4", ".m4v"]
+
         with st.spinner("Sedang memproses dan menyusun metadata Meta..."):
             with tempfile.TemporaryDirectory() as tmp_dir:
                 input_path = os.path.join(tmp_dir, uploaded_file.name)
@@ -375,9 +412,9 @@ if uploaded_file is not None:
                 except Exception as e:
                     st.error(f"Gagal mengonversi: {e}")
 
-# Guide Section
+# Practical Guide Box (Just like Gambar 1)
 st.markdown("""
-<div class="guide-box" id="panduan-simpan">
+<aside class="guide-box" id="panduan">
     <div class="guide-title">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
@@ -391,5 +428,5 @@ st.markdown("""
         <li><span>02.</span> Tekan ikon <strong>Share</strong> di Safari, lalu pilih <strong>Save Video</strong> agar masuk ke aplikasi Photos/Galeri.</li>
         <li><span>03.</span> Buka <strong>Instagram Story</strong>, pilih videonya, lalu aktifkan ikon kacamata (Spin View).</li>
     </ul>
-</div>
+</aside>
 """, unsafe_allow_html=True)
